@@ -1,0 +1,4 @@
+CREATE TABLE chatroom (
+	id INTEGER PRIMARY KEY,
+	room_id VARCHAR(256) NOT NULL
+);

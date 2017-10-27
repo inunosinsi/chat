@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>chat demo</title>
+</head>
+<body>
+
+<section id="nav">
+<ul>
+	<li><a href="javascript:void(0);" class="chatlink" data-room="hoge">チャットルーム1</a></li>
+	<li><a href="javascript:void(0);" class="chatlink" data-room="huga">チャットルーム2</a></li>
+	<li><a href="javascript:void(0);" class="chatlink" data-room="test">チャットルーム3</a></li>
+</ul>
+</section>
+
+<section id="chat">
+	<iframe src="/chat/hoge" id="chatroom"></iframe>
+</section>
+
+</body>
+<style>
+section#nav {
+	width:20%;
+	float:left;
+}
+section#chat {
+	width:70%;
+	float:left;
+}
+section#chat iframe {
+	width:95%;
+	height:600px;
+}
+</style>
+<script src="//code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script>
+$(function(){
+	$(".chatlink").each(function(){
+		$(this).on("click", function(){
+			var roomId = $(this).attr("data-room");
+			//console.log(roomId);
+			var chatroom = $("#chatroom");
+			chatroom.attr("src", "");
+			chatroom.attr("src", "/chat/" + roomId);
+			//chatroom[0].contentDocument.location.replace(true);
+		})
+	});
+});
+</script>
+</html>

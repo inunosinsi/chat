@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>web socket</title>
+</head>
+<body>
+namespace:<span id="ns" style="font-weight:bold;"></span><br>
+<div id="msg"></div>
+<div id="system_text"></div>
+<textarea id="msg_input"></textarea>
+<button onclick="publishMessage();">送信</button>
+<input type="hidden" id="user_id" value="1">
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+<script>
+var systemText = document.querySelector("#system_text");
+
+var roomId = location.pathname.replace("/chat/", "");
+document.querySelector("#ns").innerText = roomId;
+
+var websocketUrl = "http://" + location.hostname + ":8081/chat/" + roomId;
+var socket = io.connect(websocketUrl);
+
+socket.on("connected", function(name){});
+socket.on("publish", function(data){ addMessage(data.value);});
+socket.on("disconnect", function(){});
+socket.on("start typing", function(typinguser){
+	if(systemText.innerHTML.length === 0){
+		systemText.innerHTML += typinguser + 'が入力中';
+	}
+});
+socket.on("stop typing", function(){
+	systemText.innerHTML = "";
+});
+
+var msgArea = document.querySelector("#msg");
+var userId = Math.floor(Math.random()*100);
+//addMessage("貴方は" + myName + "として入室しました");
+start(userId);
+
+document.querySelector("#msg_input").addEventListener("keyup", function(){
+	socket.emit("start typing");
+});
+
+// 2.イベントに絡ませる関数の定義
+function start(userId){
+	socket.emit("connected", userId + "さん");
+}
+
+function publishMessage(){
+	var textInput = document.querySelector("#msg_input");
+	if(textInput.value.length){
+		//var userId = parseInt(document.querySelector("#user_id").value);
+		socket.emit("publish", {user_id: userId, value: textInput.value});
+		textInput.value = "";
+	}
+
+	socket.emit("stop typing");
+}
+
+function addMessage(msg){
+	var domMsg = document.createElement("div");
+	domMsg.innerHTML = new Date().toLocaleTimeString() + " " + msg;
+	msgArea.appendChild(domMsg);
+}
+</script>
+</body>
+</html>
