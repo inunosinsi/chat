@@ -3,7 +3,16 @@ const fs = require("fs");
 const xssFilters = require('xss-filters');
 const querystring = require('querystring');
 
-//MySQLを読み込む
+//SOY Shop本体のデータベースを読み込む @ToDo MySQLに対応
+const obj = JSON.parse(fs.readFileSync("config.json"));
+//let database = require(__dirname + '/_module/db.js').init();
+
+const sqlite3 = require('sqlite3').verbose();
+let database = new sqlite3.Database(obj.sitedir + ".db/sqlite.db", function(err){
+	if(err){
+		console.error(err.message);
+	}
+});
 
 const server = require("http").createServer();
 server.on("request", function(req, res) {
@@ -64,23 +73,19 @@ console.log("create server : " + port);
 const io = require("socket.io").listen(server);
 
 // アプリ起動時、データベースに格納されているroomIdを元に接続を試みる
-db.each("SELECT * FROM chatroom", [], function(err, res) {
-    connectChatRoom(res.room_id)
+database.each("SELECT room_token FROM bonbon_chatroom", [], function(err, res) {
+	connectChatRoom(res.room_token);
 });
+database.close();
+delete database;
 
 function connectChatRoom(roomId) {
-
-	/** チャットルーム毎にデータベースと接続 **/
-	let json = fs.readFileSync("config.json");
-	let obj = JSON.parse(json);
-	let db = require(__dirname + '/_module/db.js').init(obj.sitedir + roomId + "/sqlite.db");
-
     // ユーザ管理ハッシュ
     var userHash = {};
 
     // Namespacesを利用する
     var chatNS = io.of('/chat/' + roomId);
-    chatNS.on("connection", function(socket) {
+	chatNS.on("connection", function(socket) {
 
         // Room(Namespacesで分けた時、roomも利用した方が良いみたい)
         var roomName = "default";
@@ -96,12 +101,21 @@ function connectChatRoom(roomId) {
         // メッセージ送信カスタムイベント
         socket.on("publish", function(data) {
 
+			var db = new sqlite3.Database(obj.sitedir + ".chat/" + roomId + "/sqlite.db", function(err){
+				if(err){
+					console.error(err.message);
+				}
+			});
+
             //data.user_id;
-            db.run("INSERT INTO message_table(room_id, user_id, content, send_date) VALUES('" + roomId + "', " + data.user_id + ", '" + data.value + "', '" + parseInt(Math.floor(new Date().getTime() / 1000)) + "');", function(err, res) {
+            db.run("INSERT INTO message_table(user_id, content, send_date) VALUES(" + data.user_id + ", '" + data.value + "', '" + parseInt(Math.floor(new Date().getTime() / 1000)) + "');", function(err, res) {
                 if (err) {
                     console.error(err.message);
                 }
             });
+
+			db.close();
+			delete db;
 
             chatNS.to(roomName).emit("publish", {
                 value: "[" + data.user_id + "さん]" + xssFilters.inHTMLData(data.value)
