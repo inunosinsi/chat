@@ -118,7 +118,8 @@ function connectChatRoom(roomId) {
 			delete db;
 
             chatNS.to(roomName).emit("publish", {
-                value: "[" + data.user_id + "さん]" + xssFilters.inHTMLData(data.value)
+				userId: data.user_id,
+                value: xssFilters.inHTMLData(data.value)
             });
         });
 
