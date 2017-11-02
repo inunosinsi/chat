@@ -94,8 +94,8 @@ function connectChatRoom(roomId) {
         socket.join(roomName);
 
         // 接続開始のカスタムイベント(接続元ユーザを保存し、他ユーザへ通知)
-        socket.on("connected", function(name) {
-            userHash[socket.id] = name;
+        socket.on("connected", function(userId) {
+			userHash[socket.id] = userId;
         });
 
         // メッセージ送信カスタムイベント
@@ -126,7 +126,7 @@ function connectChatRoom(roomId) {
         let nowTyping = 0;
         socket.on("start typing", function() {
             if (nowTyping <= 0) {
-                socket.to(roomName).emit("start typing", userHash[socket.id]);
+				socket.to(roomName).emit("start typing", userHash[socket.id]);
             }
 
             nowTyping++;
