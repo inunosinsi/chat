@@ -19,10 +19,17 @@ server.on("request", function(req, res) {
     //ルームの作成
     if (req.method == "POST") {
         if (req.url.indexOf("/create") === 0) {
+			var origin;
+			if(req.headers.host.indexOf("localhost") === 0){
+				origin = "http://localhost:8091";
+			}else if(req.headers.host.indexOf("153.126.195.232") === 0){
+				origin = "http://153.126.195.232";
+			}
+
             //CORS
             res.writeHead(200, {
                 'Content-Type': 'application/json; charset=utf-8',
-                'Access-Control-Allow-Origin': 'http://localhost:8091',
+                'Access-Control-Allow-Origin': origin,
                 'Access-Control-Allow-Methods': 'POST',
                 'Access-Control-Allow-Headers': '*',
                 "Content-Type": "text/plain"
