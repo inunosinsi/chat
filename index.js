@@ -102,7 +102,7 @@ function connectChatRoom(roomId) {
         // メッセージ送信カスタムイベント
         socket.on("publish", function(data) {
 
-			var db = new sqlite3.Database(obj.sitedir + ".chat/" + roomId + "/sqlite.db", function(err){
+			var db = new sqlite3.Database(config.sitedir + ".chat/" + roomId + "/sqlite.db", function(err){
 				if(err){
 					console.error(err.message);
 				}
