@@ -35,7 +35,9 @@ if(config.dbtype == "sqlite"){
 	});
 	conn.connect();
 	conn.query("SELECT room_token FROM bonbon_chatroom", function(err, rows, fields){
-		connectChatRoom(rows[0].room_token);
+		rows.forEach(function(row){
+			connectChatRoom(row.room_token);
+		});
 	});
 	conn.end();
 	delete dbconf, conn;
