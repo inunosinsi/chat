@@ -1,4 +1,7 @@
 {
 	"sitedir" : "",
+	"admindir" : "",
+	"siteid" : "",
 	"origin" : "",
+	"dbtype" : "sqlite"
 }
