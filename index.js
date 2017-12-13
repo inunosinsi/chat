@@ -10,39 +10,6 @@ const config = JSON.parse(fs.readFileSync("config.json"));
 
 const sqlite3 = require('sqlite3').verbose();
 
-//SOY ShopのデータベースがSQLite版
-if(config.dbtype == "sqlite"){
-	let database = new sqlite3.Database(config.sitedir + ".db/sqlite.db", function(err){
-		if(err){
-			console.error(err.message);
-		}
-	});
-
-	// アプリ起動時、データベースに格納されているroomIdを元に接続を試みる
-	database.each("SELECT room_token FROM bonbon_chatroom", [], function(err, res) {
-		connectChatRoom(res.room_token);
-	});
-	database.close();
-	delete database;
-//SOY ShopのデータベースがMySQL版
-}else{
-	let dbconf = fs.readFileSync(config.admindir + "soyshop/webapp/conf/shop/" + config.siteid + ".admin.conf.php", "utf-8");
-	let conn = require('mysql').createConnection({
-		host     : dbconf.match("mysql:host=(.*?);")[1],
-		user     : dbconf.match("SITE_USER\",\"(.*?)\"")[1],
-		password : dbconf.match("SITE_PASS\",\"(.*?)\"")[1],
-		database : dbconf.match("dbname=(.*?);")[1]
-	});
-	conn.connect();
-	conn.query("SELECT room_token FROM bonbon_chatroom", function(err, rows, fields){
-		rows.forEach(function(row){
-			connectChatRoom(row.room_token);
-		});
-	});
-	conn.end();
-	delete dbconf, conn;
-}
-
 const server = require("http").createServer();
 server.on("request", function(req, res) {
     //ルームの作成
@@ -101,6 +68,39 @@ server.listen(port);
 console.log("create server : " + port);
 
 const io = require("socket.io").listen(server);
+
+//SOY ShopのデータベースがSQLite版
+if(config.dbtype == "sqlite"){
+	let database = new sqlite3.Database(config.sitedir + ".db/sqlite.db", function(err){
+		if(err){
+			console.error(err.message);
+		}
+	});
+
+	// アプリ起動時、データベースに格納されているroomIdを元に接続を試みる
+	database.each("SELECT room_token FROM bonbon_chatroom", [], function(err, res) {
+		connectChatRoom(res.room_token);
+	});
+	database.close();
+	delete database;
+//SOY ShopのデータベースがMySQL版
+}else{
+	let dbconf = fs.readFileSync(config.admindir + "soyshop/webapp/conf/shop/" + config.siteid + ".admin.conf.php", "utf-8");
+	let conn = require('mysql').createConnection({
+		host     : dbconf.match("mysql:host=(.*?);")[1],
+		user     : dbconf.match("SITE_USER\",\"(.*?)\"")[1],
+		password : dbconf.match("SITE_PASS\",\"(.*?)\"")[1],
+		database : dbconf.match("dbname=(.*?);")[1]
+	});
+	conn.connect();
+	conn.query("SELECT room_token FROM bonbon_chatroom", function(err, rows, fields){
+		rows.forEach(function(row){
+			connectChatRoom(row.room_token);
+		});
+	});
+	conn.end();
+	delete dbconf, conn;
+}
 
 function connectChatRoom(roomId) {
     // ユーザ管理ハッシュ
