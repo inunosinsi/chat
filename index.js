@@ -19,11 +19,7 @@ if(config.tls == 1){
 			key: fs.readFileSync(config.key),
 			cert: [fs.readFileSync(config.cert)],
 			ca: [fs.readFileSync(config.chain), fs.readFileSync(config.fullchain)]
-		},
-		(req, res) =>{
-        	res.write("hello");
-        	res.end();
-    	}
+		}
 	);
 //http
 } else {
