@@ -9,13 +9,9 @@ const config = JSON.parse(fs.readFileSync("config.json"));
 //let database = require(__dirname + '/_module/db.js').init();
 
 const sqlite3 = require('sqlite3').verbose();
+const server = require("http").createServer();
 
-if(config.tls == 1){
-	const server = require("https").createServer();
-}else{
-	const server = require("http").createServer();
-}
-
+/** @ToDo httpsでの書き方を調べる **/
 server.on("request", function(req, res) {
     //ルームの作成
     if (req.method == "POST") {
