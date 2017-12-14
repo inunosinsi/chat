@@ -13,11 +13,20 @@ const sqlite3 = require('sqlite3').verbose();
 //https
 if(config.tls == 1){
 	/** @ToDo httpsでの書き方を調べる **/
-	const server = require("https").createServer({
-		key: fs.readFileSync(config.key),
-		cert: [fs.readFileSync(config.cert)],
-		ca: [fs.readFileSync(config.chain), fs.readFileSync(config.fullchain)]
-	});
+	const server = require("https").createServer(
+		{
+			key: fs.readFileSync(config.key),
+			cert: [fs.readFileSync(config.cert)],
+			ca: [fs.readFileSync(config.chain), fs.readFileSync(config.fullchain)]
+		},
+		(req, res) =>{
+        	res.write("hello");
+        	res.end();
+    	}
+	);
+	cosnole.log(server);
+	server.listen(port);
+	console.log("create server : " + port);
 //http
 } else {
 	const server = require("http").createServer();
@@ -74,10 +83,9 @@ if(config.tls == 1){
 			stream.pipe(res);
 		}
 	});
+	server.listen(port);
+	console.log("create server : " + port);
 }
-
-server.listen(port);
-console.log("create server : " + port);
 
 const io = require("socket.io").listen(server);
 
