@@ -9,11 +9,12 @@ const config = JSON.parse(fs.readFileSync("config.json"));
 //let database = require(__dirname + '/_module/db.js').init();
 
 const sqlite3 = require('sqlite3').verbose();
+let server;
 
 //https
 if(config.tls == 1){
 	/** @ToDo httpsでの書き方を調べる **/
-	const server = require("https").createServer(
+	server = require("https").createServer(
 		{
 			key: fs.readFileSync(config.key),
 			cert: [fs.readFileSync(config.cert)],
@@ -24,12 +25,11 @@ if(config.tls == 1){
         	res.end();
     	}
 	);
-	cosnole.log(server);
 	server.listen(port);
 	console.log("create server : " + port);
 //http
 } else {
-	const server = require("http").createServer();
+	server = require("http").createServer();
 	server.on("request", function(req, res) {
 		//ルームの作成
 		if (req.method == "POST") {

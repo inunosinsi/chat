@@ -1,5 +1,5 @@
 {
-  "name": "chatdemo",
+  "name": "chat",
   "version": "1.0.0",
   "description": "chat app demo",
   "main": "index.js",
@@ -8,18 +8,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/inunosinsi/chatdemo.git"
+    "url": "git+https://github.com/inunosinsi/chat.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/inunosinsi/chatdemo/issues"
+    "url": "https://github.com/inunosinsi/chat/issues"
   },
-  "homepage": "https://github.com/inunosinsi/chatdemo#readme",
+  "homepage": "https://github.com/inunosinsi/chat#readme",
   "devDependencies": {
     "mysql": "^2.15.0",
     "socket.io": "^2.0.3",
-    "sqlite3": "^3.1.11",
+    "sqlite3": "^3.1.13",
     "xss-filters": "^1.2.7"
   }
 }
