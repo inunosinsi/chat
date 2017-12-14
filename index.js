@@ -14,15 +14,15 @@ let server;
 //https
 if(config.tls == 1){
 	/** @ToDo httpsでの書き方を調べる **/
-	server = require("https").createServer(
-		{
-			key: fs.readFileSync(config.key),
-			cert: [fs.readFileSync(config.cert)],
-			ca: [fs.readFileSync(config.chain), fs.readFileSync(config.fullchain)]
-		}
-	);
+	var opts = {
+		key: fs.readFileSync(config.key),
+		cert: [fs.readFileSync(config.cert)],
+		ca: [fs.readFileSync(config.chain), fs.readFileSync(config.fullchain)]
+	};
+	server = require("https").createServer(opts);
 //http
 } else {
+	opts = {};
 	server = require("http").createServer();
 }
 
@@ -80,7 +80,7 @@ server.on("request", function(req, res) {
 	}
 });
 
-server.listen(port);
+server.listen(port, opts);
 console.log("create server : " + port);
 
 const io = require("socket.io").listen(server);
