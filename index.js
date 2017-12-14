@@ -25,67 +25,67 @@ if(config.tls == 1){
         	res.end();
     	}
 	);
-	server.listen(port);
-	console.log("create server : " + port);
 //http
 } else {
 	server = require("http").createServer();
-	server.on("request", function(req, res) {
-		//ルームの作成
-		if (req.method == "POST") {
-			if (req.url.indexOf("/create") === 0) {
-
-				//CORS
-				res.writeHead(200, {
-					'Content-Type': 'application/json; charset=utf-8',
-					'Access-Control-Allow-Origin': config.origin,
-					'Access-Control-Allow-Methods': 'POST',
-					'Access-Control-Allow-Headers': '*',
-					"Content-Type": "text/plain"
-				});
-
-				//POSTを受け取る
-				let data = "";
-				req.on("data", function(chunk) {
-					data += chunk;
-				});
-				req.on("end", function() {
-					querystring.parse(data);
-
-					let params = {};
-					let values = data.split("&");
-					values.forEach(function(v) {
-						let arr = v.split("=");
-						params[arr[0]] = arr[1];
-					});
-
-					//新たなチャットルームを作成
-					connectChatRoom(params.roomId);
-
-					//ここでPromiseを利用する？
-					res.write("OK");
-					res.end();
-				});
-			}
-			//ページの表示
-		} else {
-			let fileName;
-			if (req.url.indexOf("/chat") === 0) {
-				fileName = "chat";
-			} else {
-				fileName = "index";
-			}
-
-			var stream = fs.createReadStream("template/" + fileName + ".html");
-			res.writeHead(200, {
-				"Content-Type": "text/html"
-			});
-			stream.pipe(res);
-		}
-	});
-	server.listen(port);
-	console.log("create server : " + port);
 }
+
+server.on("request", function(req, res) {
+	//ルームの作成
+	if (req.method == "POST") {
+		if (req.url.indexOf("/create") === 0) {
+
+			//CORS
+			res.writeHead(200, {
+				'Content-Type': 'application/json; charset=utf-8',
+				'Access-Control-Allow-Origin': config.origin,
+				'Access-Control-Allow-Methods': 'POST',
+				'Access-Control-Allow-Headers': '*',
+				"Content-Type": "text/plain"
+			});
+
+			//POSTを受け取る
+			let data = "";
+			req.on("data", function(chunk) {
+				data += chunk;
+			});
+			req.on("end", function() {
+				querystring.parse(data);
+
+				let params = {};
+				let values = data.split("&");
+				values.forEach(function(v) {
+					let arr = v.split("=");
+					params[arr[0]] = arr[1];
+				});
+
+				//新たなチャットルームを作成
+				connectChatRoom(params.roomId);
+
+				//ここでPromiseを利用する？
+				res.write("OK");
+				res.end();
+			});
+		}
+		//ページの表示
+	} else {
+		let fileName;
+		if (req.url.indexOf("/chat") === 0) {
+			fileName = "chat";
+		} else {
+			fileName = "index";
+		}
+
+		var stream = fs.createReadStream("template/" + fileName + ".html");
+		res.writeHead(200, {
+			"Content-Type": "text/html"
+		});
+		stream.pipe(res);
+	}
+});
+
+server.listen(port);
+console.log("create server : " + port);
 
 const io = require("socket.io").listen(server);
 
