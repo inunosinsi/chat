@@ -9,61 +9,68 @@ const config = JSON.parse(fs.readFileSync("config.json"));
 //let database = require(__dirname + '/_module/db.js').init();
 
 const sqlite3 = require('sqlite3').verbose();
-const server = require("http").createServer();
 
-/** @ToDo httpsでの書き方を調べる **/
+//https
+if(config.tls == 1){
+	/** @ToDo httpsでの書き方を調べる **/
+	const server = require("https").createServer({key: fs.readFileSync(config.key),cert: fs.readFileSync(config.cert)});
+//http
+} else {
+	const server = require("http").createServer();
+}
+
 server.on("request", function(req, res) {
-    //ルームの作成
-    if (req.method == "POST") {
-        if (req.url.indexOf("/create") === 0) {
+	//ルームの作成
+	if (req.method == "POST") {
+		if (req.url.indexOf("/create") === 0) {
 
-            //CORS
-            res.writeHead(200, {
-                'Content-Type': 'application/json; charset=utf-8',
-                'Access-Control-Allow-Origin': config.origin,
-                'Access-Control-Allow-Methods': 'POST',
-                'Access-Control-Allow-Headers': '*',
-                "Content-Type": "text/plain"
-            });
+			//CORS
+			res.writeHead(200, {
+				'Content-Type': 'application/json; charset=utf-8',
+				'Access-Control-Allow-Origin': config.origin,
+				'Access-Control-Allow-Methods': 'POST',
+				'Access-Control-Allow-Headers': '*',
+				"Content-Type": "text/plain"
+			});
 
-            //POSTを受け取る
-            let data = "";
-            req.on("data", function(chunk) {
-                data += chunk;
-            });
-            req.on("end", function() {
-                querystring.parse(data);
+			//POSTを受け取る
+			let data = "";
+			req.on("data", function(chunk) {
+				data += chunk;
+			});
+			req.on("end", function() {
+				querystring.parse(data);
 
-                let params = {};
-                let values = data.split("&");
-                values.forEach(function(v) {
-                    let arr = v.split("=");
-                    params[arr[0]] = arr[1];
-                });
+				let params = {};
+				let values = data.split("&");
+				values.forEach(function(v) {
+					let arr = v.split("=");
+					params[arr[0]] = arr[1];
+				});
 
 				//新たなチャットルームを作成
 				connectChatRoom(params.roomId);
 
-                //ここでPromiseを利用する？
-                res.write("OK");
-                res.end();
-            });
-        }
-        //ページの表示
-    } else {
-        let fileName;
-        if (req.url.indexOf("/chat") === 0) {
-            fileName = "chat";
-        } else {
-            fileName = "index";
-        }
+				//ここでPromiseを利用する？
+				res.write("OK");
+				res.end();
+			});
+		}
+		//ページの表示
+	} else {
+		let fileName;
+		if (req.url.indexOf("/chat") === 0) {
+			fileName = "chat";
+		} else {
+			fileName = "index";
+		}
 
-        var stream = fs.createReadStream("template/" + fileName + ".html");
-        res.writeHead(200, {
-            "Content-Type": "text/html"
-        });
-        stream.pipe(res);
-    }
+		var stream = fs.createReadStream("template/" + fileName + ".html");
+		res.writeHead(200, {
+			"Content-Type": "text/html"
+		});
+		stream.pipe(res);
+	}
 });
 server.listen(port);
 console.log("create server : " + port);
