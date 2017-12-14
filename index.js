@@ -10,7 +10,12 @@ const config = JSON.parse(fs.readFileSync("config.json"));
 
 const sqlite3 = require('sqlite3').verbose();
 
-const server = require("http").createServer();
+if(config.tls == 1){
+	const server = require("https").createServer();
+}else{
+	const server = require("http").createServer();
+}
+
 server.on("request", function(req, res) {
     //ルームの作成
     if (req.method == "POST") {

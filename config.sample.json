@@ -3,5 +3,6 @@
 	"admindir" : "",
 	"siteid" : "",
 	"origin" : "",
-	"dbtype" : "sqlite"
+	"dbtype" : "sqlite",
+	"tls" : "0"
 }
