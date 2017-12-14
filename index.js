@@ -13,7 +13,11 @@ const sqlite3 = require('sqlite3').verbose();
 //https
 if(config.tls == 1){
 	/** @ToDo httpsでの書き方を調べる **/
-	const server = require("https").createServer({key: fs.readFileSync(config.key),cert: fs.readFileSync(config.cert)});
+	const server = require("https").createServer({
+		key: fs.readFileSync(config.key),
+		cert: [fs.readFileSync(config.cert)],
+		ca: [fs.readFileSync(conf.chain), fs.readFileSync(conf.fullchain)]
+	});
 //http
 } else {
 	const server = require("http").createServer();

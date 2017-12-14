@@ -6,5 +6,7 @@
 	"dbtype" : "sqlite",
 	"tls" : "0",
 	"key" : "",
-	"cert" : ""
+	"cert" : "",
+	"chain" : "",
+	"fullchain" : ""
 }
