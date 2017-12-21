@@ -138,8 +138,13 @@ function connectChatRoom(roomId) {
 
         // メッセージ送信カスタムイベント
         socket.on("publish", function(data) {
+			if(data.is_group){
+				var sqliteDbPath = config.sitedir + ".chat/group/" + roomId + "/sqlite.db";
+			}else{
+				var sqliteDbPath = config.sitedir + ".chat/" + roomId + "/sqlite.db";
+			}
 
-			var db = new sqlite3.Database(config.sitedir + ".chat/" + roomId + "/sqlite.db", function(err){
+			var db = new sqlite3.Database(sqliteDbPath, function(err){
 				if(err){
 					console.error(err.message);
 				}
